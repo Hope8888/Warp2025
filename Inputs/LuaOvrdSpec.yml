@@ -55,7 +55,6 @@ LoadAfter:
     DataInfo\ShadowTable: cls\shadowtable
     
     # Random option overrides
-    DataInfo\EnumVAR: cls\enumvar
     DataInfo\AddRandomOptionNameTable: cls\randomoption
     
     # Robe overrides
@@ -67,6 +66,12 @@ LoadAfter:
     worldviewdata\worldviewdata_Language: cls\worldviewdata_language
     worldviewdata\worldviewdata_list: cls\worldviewdata_list
     worldviewdata\worldviewdata_table: cls\worldviewdata_table
+    
+    # Skillinfoz overrides
+    SkillInfoz\SkillID: cls\skillid
+    SkillInfoz\SkillInfoList: cls\skillinfolist
+    SkillInfoz\SkillDescript: cls\skilldescript
+    SkillInfoz\skilltreeview: cls\skilltreeview
 
     # Other Table overrides 
     SignBoardList: cls\signboardlist
