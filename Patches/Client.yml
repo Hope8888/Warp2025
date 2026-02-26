@@ -55,6 +55,12 @@ ResizeHealthBar:
             author : CH.C (jchcc) , Neo-Mind
             desc : Resize the HP bar drawn for Boss monsters as per user specified value.
 
+        - AllianceChatHotkeySelector:
+            title : Alliance Chat Hotkey Selector
+            recommend : no
+            author : AcidMarco,Skylove
+            desc : Allows you to choose a custom symbol to trigger Alliance Chat instead of the default '#'. This is useful to avoid conflicts with GM command symbols such as @ or !.
+
 DisableEffect:
     title : DISABLE EFFECT
     mutex : false

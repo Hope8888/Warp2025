@@ -42,14 +42,11 @@
 - FixSelectMenuWidthExpansion
 - ChangeGoldPCMaxPoints
 - FixSkillbarReset
-<<<<<<< Updated upstream
-
-=======
 - AllianceChatHotkeySelector
 - CustomEncKeys
 - IncreaseLightmapQuality
 - DisableIndoorRSW
->>>>>>> Stashed changes
+
 
 # 2024-08-07 Changes
 
