@@ -89,7 +89,8 @@ CustomEncKeys = function(_)
 		CACHE.load(cacheKey, this.Members, PACKET.Keys);
 
 		$$(_, 3.2, `Set the key for the patch`)
-		CACHE.setEntry(cacheKey, _, parseInt(newKey, 16));
+		const keyVal = (typeof newKey === 'string') ? parseInt(newKey, 16) : newKey;
+		CACHE.setEntry(cacheKey, _, keyVal);
 
 		$$(_, 3.3, `Run the helper function to make the changes in client`)
 		return this.obfuscate(_);
@@ -139,7 +140,7 @@ CustomEncKeys.obfuscate = function(patchName)
 
 	$$(_, 1.1, `Prepare suffix with Stack restore & RETN`)
 	const suffix =
-		(Exe.Version > 11
+		(Exe.Version > 11 && PACKET.KS_Type !== PACKET.Virtual
 	?
 		POP(EDI)      //pop edi
 	+	POP(ESI)      //pop esi
@@ -148,7 +149,7 @@ CustomEncKeys.obfuscate = function(patchName)
 		''
 	)
 	+
-		(ROC.HasFP
+		(ROC.HasFP && PACKET.KS_Type !== PACKET.Virtual
 	?
 		FP_STOP       //mov esp, ebp
 	:	              //pop ebp
