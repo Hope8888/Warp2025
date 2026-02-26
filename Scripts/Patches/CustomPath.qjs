@@ -87,7 +87,12 @@ CustomPath = function(_)
 		dest = EAX;
 		addr = Exe.FindHex(parts);
 		if (addr > 0)
-			refAddrs = MapAddrs(addr, parts);
+		{
+			const addrs   = MapAddrs(addr, parts);
+			const cutFrom = addrs[1];
+			const cutTo   = addrs[3] + parts[3].byteCount();
+			refAddrs = ['HOOK_SPOPUP_TAIL', cutFrom, cutTo, addrs[2]];
+		}
 	}
 
 	const isQuestQuali = (_ === 'CustomQuestQualiLub');
@@ -193,6 +198,45 @@ CustomPath = function(_)
 		});
 
 		code += MOV(BYTE_PTR, [EAX, offset], 0)
+		      + JMP(Filler(1));
+
+		Exe.SetNOPs(cutFrom, cutTo - cutFrom);
+		AutoHook(cutFrom, code, { targets: { 1: Exe.Phy2Vir(cutTo, CODE) } });
+	}
+
+	else if (Array.isArray(refAddrs) && refAddrs[0] === 'HOOK_SPOPUP_TAIL')
+	{
+		const cutFrom  = refAddrs[1];
+		const cutTo    = refAddrs[2];
+		const midAddr  = refAddrs[3];
+
+		// detect disp8 vs disp32 and read EBP offsets from original MOV instructions
+		const isDisp8_1 = (Exe.GetUint8(midAddr + 1) === 0x45);
+		const ebpOff1   = isDisp8_1 ? Exe.GetInt8(midAddr + 2) : Exe.GetInt32(midAddr + 2);
+		const mov2Start = midAddr + (isDisp8_1 ? 7 : 10);
+		const isDisp8_2 = (Exe.GetUint8(mov2Start + 1) === 0x45);
+		const ebpOff2   = isDisp8_2 ? Exe.GetInt8(mov2Start + 2) : Exe.GetInt32(mov2Start + 2);
+
+		let dsize = newStr.length, offset = 0, code = '';
+		[
+			[0x10, MOVUPS, XMM0, EAX],
+			[0x08, MOVQ,   EDX,  EAX],
+			[0x04, MOV,    EDX,  EAX],
+			[0x01, MOV,    DL,   EAX]
+		].forEach(([fsize, cmd, reg, dst]) =>
+		{
+			let nextOff = offset + fsize;
+			while (nextOff <= dsize) {
+				code += cmd(reg, [freeVir + offset])
+				     + cmd([dst, offset], reg);
+				offset = nextOff;
+				nextOff += fsize;
+			}
+		});
+
+		code += MOV(BYTE_PTR, [EAX, offset], 0)
+		      + MOV([EBP, ebpOff1], newStr.length)
+		      + MOV([EBP, ebpOff2], newStr.length | 0xF)
 		      + JMP(Filler(1));
 
 		Exe.SetNOPs(cutFrom, cutTo - cutFrom);
